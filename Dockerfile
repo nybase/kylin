@@ -38,7 +38,7 @@ RUN set -eux; mkdir -p /var/run; useradd --create-home --uid 8080 --shell /bin/b
     echo -e 'export PATH=$JAVA_HOME/bin:$PATH\n' | tee /etc/profile.d/91-env.sh ;\
     yum install -y bash ca-certificates curl wget procps psmisc iproute iputils telnet strace tzdata less tar unzip \
         tcpdump  net-tools socat  traceroute jq mtr vim createrepo logrotate crontabs dejavu-sans-fonts  pcre-devel pcre2-devel \
-        gnupg libcap openssl openssh-clients   iptables  luajit  iperf3 htop \
+        gnupg libcap openssl openssh-clients   iptables  luajit  iperf3 htop rsyslog  \
         java-11-openjdk-devel java-1.8.0-openjdk-devel ; \
     yum install -y iftop runit yum-utils java-17-openjdk-devel iftop busybox-extras iproute2 runit dumb-init tini su-exec libc6-compat \
          consul consul-template font-noto-cjk wrk atop  iftop openssh-client-default luarocks pcre-dev pcre2-dev tomcat-native || true; \
@@ -49,8 +49,8 @@ RUN set -eux; mkdir -p /var/run; useradd --create-home --uid 8080 --shell /bin/b
     bash -c 'echo -e "#!/bin/bash\nexec /usr/sbin/cron -f" > /etc/service/cron/run' ;\
     chmod 755 /etc/service/cron/run /etc/service/syslog/run ;\
     TOMCAT_VER=`wget -q https://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-9/ -O -|grep -v M| grep v9 |tail -1| awk '{split($5,c,">v") ; split(c[2],d,"/") ; print d[1]}'` ;\
-    echo $TOMCAT_VER; wget -q -c https://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-9/v${TOMCAT_VER}/bin/tomcat-${TOMCAT_VER}.tar.gz -P /tmp ;\
-    mkdir -p /logs /usr/local/tomcat /app/war /app/tomcat/conf /app/tomcat/logs /app/tomcat/work /app/tomcat/bin ; tar zxf /tmp/tomcat-${TOMCAT_VER}.tar.gz -C /usr/local/tomcat --strip-components 1 ;\
+    echo $TOMCAT_VER; wget -q -c https://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-9/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.tar.gz -P /tmp ;\
+    mkdir -p /logs /usr/local/tomcat /app/war /app/tomcat/conf /app/tomcat/logs /app/tomcat/work /app/tomcat/bin ; tar zxf /tmp/apache-tomcat-${TOMCAT_VER}.tar.gz -C /usr/local/tomcat --strip-components 1 ;\
     rm -rf /usr/local/tomcat/webapps/* || true;\ 
     cp -rv /usr/local/tomcat/conf/server.xml /app/tomcat/conf/ ;\
     sed -i -e 's@webapps@/app/war@g' -e 's@SHUTDOWN@_SHUTUP_8080@g' /app/tomcat/conf/server.xml ;\
